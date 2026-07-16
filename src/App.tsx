@@ -84,6 +84,7 @@ export default function App() {
         </button>
         <h1>🐶 사람말 개소리 변환기</h1>
         <p className="subtitle">사람 말을 진짜 개소리로 변환해드려요</p>
+        <p className="tagline">직장상사의 말을 개소리로 변환해드립니다 😏</p>
       </header>
 
       <main className="panel">
