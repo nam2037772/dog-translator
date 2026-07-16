@@ -1,0 +1,241 @@
+:root {
+  --bg: #fff3e0;
+  --bg2: #ffe4c4;
+  --card: #fff8ee;
+  --ink: #4a3728;
+  --ink-soft: #8a7059;
+  --accent: #ffb347;
+  --accent-deep: #f4952f;
+  font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR',
+    system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(160deg, var(--bg) 0%, var(--bg2) 100%);
+  color: var(--ink);
+}
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+}
+
+/* ---------- Header ---------- */
+.header {
+  text-align: center;
+  padding: 12px 0 20px;
+}
+.header h1 {
+  font-size: 2rem;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+.subtitle {
+  margin: 6px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+/* ---------- Panel ---------- */
+.panel {
+  background: var(--card);
+  border-radius: 22px;
+  padding: 18px;
+  box-shadow: 0 10px 30px rgba(180, 120, 40, 0.15);
+}
+
+.field-label {
+  display: block;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin: 4px 2px 8px;
+  color: var(--ink);
+}
+
+.input {
+  width: 100%;
+  border: 2px solid #f0d9b8;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--ink);
+  background: #fffdf9;
+  resize: none;
+  margin-bottom: 18px;
+}
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* ---------- Characters ---------- */
+.characters {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.char-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 12px 8px;
+  border: 2px solid #eedcc2;
+  border-radius: 16px;
+  background: #fffdf9;
+  cursor: pointer;
+  transition: transform 0.08s ease, border-color 0.15s ease,
+    background 0.15s ease;
+  font-family: inherit;
+}
+.char-btn:active {
+  transform: scale(0.96);
+}
+.char-btn.selected {
+  font-weight: 700;
+}
+.char-emoji {
+  font-size: 1.9rem;
+  line-height: 1;
+}
+.char-name {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.char-persona {
+  font-size: 0.68rem;
+  color: var(--ink-soft);
+  text-align: center;
+  line-height: 1.25;
+}
+
+/* ---------- Translate button ---------- */
+.translate-btn {
+  width: 100%;
+  border: none;
+  border-radius: 16px;
+  padding: 15px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  font-family: inherit;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(244, 149, 47, 0.4);
+  transition: transform 0.08s ease;
+}
+.translate-btn:active {
+  transform: scale(0.98);
+}
+
+/* ---------- Result ---------- */
+.result-section {
+  margin-top: 24px;
+  animation: pop 0.25s ease;
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result-card {
+  background: var(--card);
+  border: 3px solid var(--accent);
+  border-radius: 22px;
+  padding: 22px 20px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(180, 120, 40, 0.18);
+}
+.result-quote {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  font-style: italic;
+}
+.result-arrow {
+  font-size: 1.3rem;
+  color: var(--accent-deep);
+  margin: 8px 0;
+}
+.result-char {
+  font-weight: 800;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.result-char-emoji {
+  font-size: 1.6rem;
+}
+.result-output {
+  font-size: 1.18rem;
+  font-weight: 700;
+  line-height: 1.55;
+  margin: 6px 0 16px;
+  color: var(--ink);
+  white-space: pre-wrap;
+  word-break: keep-all;
+}
+.result-watermark {
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  opacity: 0.7;
+}
+
+.result-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+.action-btn {
+  flex: 1;
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: inherit;
+  color: var(--accent-deep);
+  background: #fffdf9;
+  cursor: pointer;
+  transition: transform 0.08s ease;
+}
+.action-btn:active {
+  transform: scale(0.97);
+}
+.action-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ---------- Footer ---------- */
+.footer {
+  text-align: center;
+  margin-top: 28px;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  opacity: 0.8;
+}
