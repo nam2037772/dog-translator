@@ -28,6 +28,4 @@ npm run preview  # 빌드 결과 미리보기
 git push origin main   # push 하면 자동 배포
 ```
 
-수동 배포(폴백)가 필요하면 `npm run deploy` 로 `gh-pages` 브랜치에 직접 올릴 수도 있습니다.
-
 `vite.config.ts` 의 `base` 는 `'./'` 로 설정되어 있어 어떤 하위 경로에서도 동작합니다.
