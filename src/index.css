@@ -67,8 +67,9 @@ body {
   font-size: 0.9rem;
 }
 .tagline {
+  width: fit-content;
   margin: 8px auto 0;
-  display: inline-block;
+  display: block;
   padding: 5px 12px;
   border-radius: 999px;
   background: var(--accent);
