@@ -5,8 +5,8 @@
 
 | 파일 | 출처 (Wikimedia Commons) | 라이선스 |
 |---|---|---|
-| `bark1.mp3` | [File:Dog.ogg](https://commons.wikimedia.org/wiki/File:Dog.ogg) | Public domain |
-| `bark2.mp3` | [File:Dog in Antefasy.wav](https://commons.wikimedia.org/wiki/File:Dog_in_Antefasy.wav) | CC0 |
+| `bark1.mp3` | [File:Ladrido perro.ogg](https://commons.wikimedia.org/wiki/File:Ladrido_perro.ogg) | CC0 |
+| `bark2.mp3` | [File:Ladrido perro.ogg](https://commons.wikimedia.org/wiki/File:Ladrido_perro.ogg) | CC0 |
 | `howl.mp3` | [File:Jem howls.ogg](https://commons.wikimedia.org/wiki/File:Jem_howls.ogg) | Public domain |
 
 낑낑(whine)·으르렁(growl) 토큰은 위 짖음 샘플을 재생 속도(playbackRate)로 변형해 만들며, 별도 음원을 쓰지 않습니다.

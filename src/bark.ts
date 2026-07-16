@@ -57,13 +57,13 @@ async function ensureBuffers(ac: AudioContext): Promise<void> {
   await loadPromise
 }
 
-// 견종 → 짖음 재생 속도(몸집·피치). 소형 높고 대형 낮다.
+// 견종 → 짖음 재생 속도(몸집·피치). 소형 높고 대형 낮다. (과하지 않게 조절)
 const BARK_RATE: Record<CharacterId, number> = {
-  chihuahua: 1.5,
-  shiba: 1.15,
-  golden: 0.95,
-  bulldog: 0.78,
-  jindo: 1.02,
+  chihuahua: 1.38,
+  shiba: 1.12,
+  golden: 0.92,
+  bulldog: 0.8,
+  jindo: 1.0,
 }
 // 견종 → 울음 재생 속도
 const HOWL_RATE: Record<CharacterId, number> = {
