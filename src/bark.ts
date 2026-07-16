@@ -1,38 +1,21 @@
 import type { CharacterId } from './characters'
+import { VOICE, type SoundToken, type VoiceType } from './dogSpeak'
 
 /**
- * 외부 음원 파일 없이 Web Audio API 로 캐릭터별 짖는 소리를 합성한다.
- * 음높이뿐 아니라 짖는 횟수 · 길이 · 음색까지 캐릭터마다 다르게 준다.
+ * 외부 음원 없이 Web Audio API 로 개소리를 합성한다.
+ * dogSpeak 이 만든 토큰(짖음/낑낑/으르렁/울음)을 순서대로 재생해
+ * 화면의 의성어 텍스트와 소리가 일치한다.
  */
 
-interface BarkProfile {
-  startFreq: number // 짖음 시작 음높이(Hz)
-  endFreq: number // 끝 음높이(Hz) — 빠르게 떨어지며 억양을 만든다
-  dur: number // 한 번 짖는 길이(s)
-  gap: number // 짖음 간격(s)
-  minCount: number // 최소 짖는 횟수(짧은 문장)
-  maxCount: number // 최대 짖는 횟수(긴 문장)
-  rate: number // 글자당 늘어나는 횟수 — 성격별 반응성
-  type: OscillatorType // 음색
-  q: number // 밴드패스 Q — 클수록 날카로움
-  brightness: number // 밴드패스 중심주파수 배수
-}
-
-const PROFILES: Record<CharacterId, BarkProfile> = {
-  // 다정한 "멍! 멍!" — 길면 신나서 더 짖는다
-  golden: { startFreq: 420, endFreq: 170, dur: 0.2, gap: 0.24, minCount: 2, maxCount: 7, rate: 0.14, type: 'sawtooth', q: 1.1, brightness: 2.2 },
-  // 시크하고 날카로운 "왈! 왈!" — 반응 무던
-  shiba: { startFreq: 500, endFreq: 210, dur: 0.16, gap: 0.19, minCount: 1, maxCount: 5, rate: 0.09, type: 'square', q: 2.2, brightness: 2.6 },
-  // 다급한 고음 "깽깽깽!" — 문장 길면 폭발적으로 늘어남
-  chihuahua: { startFreq: 820, endFreq: 560, dur: 0.09, gap: 0.11, minCount: 3, maxCount: 12, rate: 0.32, type: 'sawtooth', q: 3.2, brightness: 3.2 },
-  // 묵직하고 진중한 "웡— 웡—"
-  jindo: { startFreq: 260, endFreq: 110, dur: 0.28, gap: 0.34, minCount: 2, maxCount: 5, rate: 0.1, type: 'sawtooth', q: 0.9, brightness: 1.6 },
-  // 낮고 느긋한 "우웡—" — 길어도 귀찮아서 거의 안 늘어남
-  bulldog: { startFreq: 190, endFreq: 80, dur: 0.34, gap: 0.4, minCount: 1, maxCount: 3, rate: 0.04, type: 'sawtooth', q: 0.7, brightness: 1.4 },
+// 견종 목소리별 기본 음높이 배수 (소형 높고 대형 낮음)
+const PITCH: Record<VoiceType, number> = {
+  small: 1.7,
+  medium: 1.05,
+  large: 0.72,
+  howler: 0.9,
 }
 
 let ctx: AudioContext | null = null
-
 function getCtx(): AudioContext | null {
   const AC =
     window.AudioContext ||
@@ -43,70 +26,153 @@ function getCtx(): AudioContext | null {
   return ctx
 }
 
-/** 한 번의 짖음을 합성해 master 로 보낸다 */
-function woof(ac: AudioContext, master: AudioNode, start: number, p: BarkProfile) {
+/** "멍!" 한 번 */
+function playBark(ac: AudioContext, out: AudioNode, start: number, pitch: number) {
   const osc = ac.createOscillator()
-  const sub = ac.createOscillator() // 한 옥타브 아래 — 소리에 두께를 준다
+  const sub = ac.createOscillator()
   const gain = ac.createGain()
   const band = ac.createBiquadFilter()
-
-  osc.type = p.type
+  osc.type = 'sawtooth'
   sub.type = 'triangle'
-  osc.frequency.setValueAtTime(p.startFreq, start)
-  osc.frequency.exponentialRampToValueAtTime(p.endFreq, start + p.dur)
-  sub.frequency.setValueAtTime(p.startFreq / 2, start)
-  sub.frequency.exponentialRampToValueAtTime(p.endFreq / 2, start + p.dur)
-
+  osc.frequency.setValueAtTime(430 * pitch, start)
+  osc.frequency.exponentialRampToValueAtTime(180 * pitch, start + 0.16)
+  sub.frequency.setValueAtTime(215 * pitch, start)
+  sub.frequency.exponentialRampToValueAtTime(90 * pitch, start + 0.16)
   band.type = 'bandpass'
-  band.frequency.value = p.startFreq * p.brightness
-  band.Q.value = p.q
-
-  // 크고 또렷한 진폭 엔벨로프
-  const peak = 0.95
+  band.frequency.value = 950 * pitch
+  band.Q.value = 1.4
   gain.gain.setValueAtTime(0.0001, start)
-  gain.gain.exponentialRampToValueAtTime(peak, start + 0.012)
-  gain.gain.setValueAtTime(peak, start + p.dur * 0.5)
-  gain.gain.exponentialRampToValueAtTime(0.0001, start + p.dur)
-
+  gain.gain.exponentialRampToValueAtTime(0.95, start + 0.012)
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.18)
   osc.connect(band)
   sub.connect(band)
   band.connect(gain)
-  gain.connect(master)
-
+  gain.connect(out)
   osc.start(start)
   sub.start(start)
-  osc.stop(start + p.dur + 0.02)
-  sub.stop(start + p.dur + 0.02)
+  osc.stop(start + 0.2)
+  sub.stop(start + 0.2)
+  return 0.16
 }
 
-/**
- * 선택한 캐릭터로 짖는다.
- * @param text 입력 문장 — 길수록(공백 제외 글자 수) 더 많이/오래 짖는다.
- */
-export function bark(character: CharacterId, text = '') {
+/** "낑…" 낑낑거림 — 높고 부드럽게 내려가며 떨림 */
+function playWhine(ac: AudioContext, out: AudioNode, start: number, pitch: number) {
+  const osc = ac.createOscillator()
+  const gain = ac.createGain()
+  const vib = ac.createOscillator()
+  const vibGain = ac.createGain()
+  const dur = 0.42
+  osc.type = 'triangle'
+  osc.frequency.setValueAtTime(720 * pitch, start)
+  osc.frequency.exponentialRampToValueAtTime(520 * pitch, start + dur)
+  vib.frequency.value = 14 // 떨림
+  vibGain.gain.value = 30 * pitch
+  vib.connect(vibGain)
+  vibGain.connect(osc.frequency)
+  gain.gain.setValueAtTime(0.0001, start)
+  gain.gain.exponentialRampToValueAtTime(0.5, start + 0.06)
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + dur)
+  osc.connect(gain)
+  gain.connect(out)
+  osc.start(start)
+  vib.start(start)
+  osc.stop(start + dur + 0.02)
+  vib.stop(start + dur + 0.02)
+  return dur
+}
+
+/** "으르릉…" 낮게 깔리는 진동 */
+function playGrowl(ac: AudioContext, out: AudioNode, start: number, pitch: number) {
+  const osc = ac.createOscillator()
+  const gain = ac.createGain()
+  const lp = ac.createBiquadFilter()
+  const lfo = ac.createOscillator() // 진폭 떨림으로 그르렁 질감
+  const lfoGain = ac.createGain()
+  const dur = 0.4
+  osc.type = 'sawtooth'
+  osc.frequency.setValueAtTime(95 * pitch, start)
+  lp.type = 'lowpass'
+  lp.frequency.value = 500 * pitch
+  lfo.frequency.value = 26
+  lfoGain.gain.value = 0.25
+  lfo.connect(lfoGain)
+  lfoGain.connect(gain.gain)
+  gain.gain.setValueAtTime(0.5, start)
+  gain.gain.setValueAtTime(0.5, start + dur - 0.05)
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + dur)
+  osc.connect(lp)
+  lp.connect(gain)
+  gain.connect(out)
+  osc.start(start)
+  lfo.start(start)
+  osc.stop(start + dur + 0.02)
+  lfo.stop(start + dur + 0.02)
+  return dur
+}
+
+/** "아우우~" 울부짖음 — 길게 올라갔다 내려오며 떨림 */
+function playHowl(ac: AudioContext, out: AudioNode, start: number, pitch: number) {
+  const osc = ac.createOscillator()
+  const gain = ac.createGain()
+  const band = ac.createBiquadFilter()
+  const vib = ac.createOscillator()
+  const vibGain = ac.createGain()
+  const dur = 0.95
+  osc.type = 'sawtooth'
+  osc.frequency.setValueAtTime(230 * pitch, start)
+  osc.frequency.linearRampToValueAtTime(340 * pitch, start + dur * 0.35)
+  osc.frequency.linearRampToValueAtTime(250 * pitch, start + dur * 0.7)
+  osc.frequency.exponentialRampToValueAtTime(180 * pitch, start + dur)
+  band.type = 'bandpass'
+  band.frequency.value = 900 * pitch
+  band.Q.value = 3
+  vib.frequency.value = 6
+  vibGain.gain.value = 12 * pitch
+  vib.connect(vibGain)
+  vibGain.connect(osc.frequency)
+  gain.gain.setValueAtTime(0.0001, start)
+  gain.gain.exponentialRampToValueAtTime(0.85, start + 0.1)
+  gain.gain.setValueAtTime(0.85, start + dur - 0.2)
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + dur)
+  osc.connect(band)
+  band.connect(gain)
+  gain.connect(out)
+  osc.start(start)
+  vib.start(start)
+  osc.stop(start + dur + 0.02)
+  vib.stop(start + dur + 0.02)
+  return dur
+}
+
+/** dogSpeak 토큰들을 순서대로 소리로 재생 */
+export function playTokens(character: CharacterId, tokens: SoundToken[]) {
   const ac = getCtx()
   if (!ac) return
-  // 브라우저 자동재생 정책: 사용자 제스처(클릭) 안에서 resume
   if (ac.state === 'suspended') ac.resume()
 
-  // 전체 음량을 올리고 클리핑을 막기 위한 소프트 리미터
   const master = ac.createGain()
   master.gain.value = 1.0
   const comp = ac.createDynamicsCompressor()
   master.connect(comp)
   comp.connect(ac.destination)
 
-  const p = PROFILES[character]
-  // 문장 길이(공백 제외 글자 수)로 짖는 횟수 결정
-  const len = text.replace(/\s/g, '').length
-  const count = Math.max(
-    p.minCount,
-    Math.min(p.maxCount, p.minCount + Math.round(len * p.rate)),
-  )
-  const now = ac.currentTime + 0.01
-  for (let i = 0; i < count; i++) {
-    // 반복될수록 아주 약간 낮아지게 해 자연스러움을 준다
-    const prof = { ...p, startFreq: p.startFreq * (1 - i * 0.03), endFreq: p.endFreq * (1 - i * 0.03) }
-    woof(ac, master, now + i * p.gap, prof)
+  const pitch = PITCH[VOICE[character]]
+  let t = ac.currentTime + 0.02
+
+  for (const tok of tokens) {
+    if (tok.kind === 'bark') {
+      // 음절 반복 수만큼 연속으로 짖는다
+      for (let i = 0; i < Math.max(1, tok.reps); i++) {
+        playBark(ac, master, t, pitch * (1 - i * 0.02))
+        t += 0.16
+      }
+      t += 0.06 // 그룹 간 간격
+    } else if (tok.kind === 'whine') {
+      t += playWhine(ac, master, t, pitch) + 0.05
+    } else if (tok.kind === 'growl') {
+      t += playGrowl(ac, master, t, pitch) + 0.06
+    } else {
+      t += playHowl(ac, master, t, pitch) + 0.08
+    }
   }
 }

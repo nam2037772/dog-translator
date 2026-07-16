@@ -2,11 +2,14 @@ import { useRef, useState } from 'react'
 import { toPng } from 'html-to-image'
 import { CHARACTERS, CHARACTER_MAP, type CharacterId } from './characters'
 import { translate } from './translate'
-import { bark } from './bark'
+import { toDogSpeak, type SoundToken } from './dogSpeak'
+import { playTokens } from './bark'
 
 interface Result {
   input: string
-  output: string
+  dogSpeak: string // 개소리 의성어 (메인 출력)
+  tokens: SoundToken[] // 오디오 합성용
+  meaning: string // 강아지 속뜻(성격 번역)
   character: CharacterId
 }
 
@@ -21,19 +24,24 @@ export default function App() {
 
   const handleTranslate = () => {
     if (!input.trim()) return
+    const speak = toDogSpeak(input, selected)
     setResult({
       input: input.trim(),
-      output: translate(input, selected),
+      dogSpeak: speak.text,
+      tokens: speak.tokens,
+      meaning: translate(input, selected),
       character: selected,
     })
     setCopied(false)
-    if (!muted) bark(selected, input)
+    if (!muted) playTokens(selected, speak.tokens)
   }
 
   const handleCopy = async () => {
     if (!result) return
     try {
-      await navigator.clipboard.writeText(result.output)
+      await navigator.clipboard.writeText(
+        `${result.dogSpeak}\n(속뜻: ${result.meaning})`,
+      )
       setCopied(true)
       setTimeout(() => setCopied(false), 1500)
     } catch {
@@ -131,7 +139,8 @@ export default function App() {
               <span className="result-char-emoji">{resultChar.emoji}</span>
               {resultChar.name}
             </div>
-            <p className="result-output">{result.output}</p>
+            <p className="result-dogspeak">{result.dogSpeak}</p>
+            <p className="result-meaning">속뜻 · {result.meaning}</p>
             <div className="result-watermark">🐶 개소리 번역기</div>
           </div>
 
@@ -139,7 +148,7 @@ export default function App() {
             <button
               type="button"
               className="action-btn"
-              onClick={() => bark(result.character, result.input)}
+              onClick={() => playTokens(result.character, result.tokens)}
             >
               다시 듣기 🔊
             </button>
