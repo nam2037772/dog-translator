@@ -35,8 +35,26 @@ body {
 
 /* ---------- Header ---------- */
 .header {
+  position: relative;
   text-align: center;
   padding: 12px 0 20px;
+}
+.mute-btn {
+  position: absolute;
+  top: 8px;
+  right: 4px;
+  border: none;
+  background: #fffdf9;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(180, 120, 40, 0.18);
+  transition: transform 0.08s ease;
+}
+.mute-btn:active {
+  transform: scale(0.92);
 }
 .header h1 {
   font-size: 2rem;
@@ -207,6 +225,7 @@ body {
 
 .result-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin-top: 14px;
 }

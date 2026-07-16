@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { toPng } from 'html-to-image'
 import { CHARACTERS, CHARACTER_MAP, type CharacterId } from './characters'
 import { translate } from './translate'
+import { bark } from './bark'
 
 interface Result {
   input: string
@@ -15,6 +16,7 @@ export default function App() {
   const [result, setResult] = useState<Result | null>(null)
   const [copied, setCopied] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [muted, setMuted] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
 
   const handleTranslate = () => {
@@ -25,6 +27,7 @@ export default function App() {
       character: selected,
     })
     setCopied(false)
+    if (!muted) bark(selected)
   }
 
   const handleCopy = async () => {
@@ -62,6 +65,15 @@ export default function App() {
   return (
     <div className="app">
       <header className="header">
+        <button
+          type="button"
+          className="mute-btn"
+          onClick={() => setMuted((m) => !m)}
+          aria-label={muted ? '소리 켜기' : '소리 끄기'}
+          title={muted ? '소리 켜기' : '소리 끄기'}
+        >
+          {muted ? '🔇' : '🔊'}
+        </button>
         <h1>🐶 개소리 번역기</h1>
         <p className="subtitle">사람 말을 강아지 입장에서 번역해드려요</p>
       </header>
@@ -124,6 +136,13 @@ export default function App() {
           </div>
 
           <div className="result-actions">
+            <button
+              type="button"
+              className="action-btn"
+              onClick={() => bark(result.character)}
+            >
+              다시 듣기 🔊
+            </button>
             <button type="button" className="action-btn" onClick={handleCopy}>
               {copied ? '복사됨! ✅' : '복사 📋'}
             </button>
