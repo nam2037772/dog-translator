@@ -58,7 +58,7 @@ export default function App() {
         backgroundColor: '#fff8ee',
       })
       const link = document.createElement('a')
-      link.download = '개소리번역.png'
+      link.download = '개소리변환.png'
       link.href = dataUrl
       link.click()
     } catch {
@@ -82,8 +82,8 @@ export default function App() {
         >
           {muted ? '🔇' : '🔊'}
         </button>
-        <h1>🐶 개소리 번역기</h1>
-        <p className="subtitle">사람 말을 강아지 입장에서 번역해드려요</p>
+        <h1>🐶 사람말 개소리 변환기</h1>
+        <p className="subtitle">사람 말을 진짜 개소리로 변환해드려요</p>
       </header>
 
       <main className="panel">
@@ -141,7 +141,7 @@ export default function App() {
             </div>
             <p className="result-dogspeak">{result.dogSpeak}</p>
             <p className="result-meaning">속뜻 · {result.meaning}</p>
-            <div className="result-watermark">🐶 개소리 번역기</div>
+            <div className="result-watermark">🐶 사람말 개소리 변환기</div>
           </div>
 
           <div className="result-actions">
