@@ -19,15 +19,15 @@ npm run build    # dist/ 정적 빌드
 npm run preview  # 빌드 결과 미리보기
 ```
 
-## 배포 (GitHub Pages)
+## 배포 (GitHub Pages · 자동)
 
-`gh-pages` 브랜치로 정적 빌드를 배포하는 방식입니다.
+`main` 브랜치에 push 하면 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) 이
+자동으로 빌드·배포합니다. 저장소 **Settings → Pages → Source** 는 **GitHub Actions** 로 설정합니다.
 
 ```bash
-npm run build          # dist/ 생성
-npm run deploy         # dist/ 를 gh-pages 브랜치로 push
+git push origin main   # push 하면 자동 배포
 ```
 
-저장소 **Settings → Pages → Source** 를 **Deploy from a branch → gh-pages / (root)** 로 설정하면 게시됩니다.
+수동 배포(폴백)가 필요하면 `npm run deploy` 로 `gh-pages` 브랜치에 직접 올릴 수도 있습니다.
 
 `vite.config.ts` 의 `base` 는 `'./'` 로 설정되어 있어 어떤 하위 경로에서도 동작합니다.
