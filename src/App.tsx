@@ -27,7 +27,7 @@ export default function App() {
       character: selected,
     })
     setCopied(false)
-    if (!muted) bark(selected)
+    if (!muted) bark(selected, input)
   }
 
   const handleCopy = async () => {
@@ -139,7 +139,7 @@ export default function App() {
             <button
               type="button"
               className="action-btn"
-              onClick={() => bark(result.character)}
+              onClick={() => bark(result.character, result.input)}
             >
               다시 듣기 🔊
             </button>
