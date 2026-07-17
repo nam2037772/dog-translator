@@ -3,12 +3,65 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-    <meta name="theme-color" content="#ffb347" />
-    <title>🐶 사람말 개소리 변환기</title>
-    <meta name="description" content="사람의 말을 진짜 개소리로 변환해주는 초경량 웹앱" />
+    <meta name="theme-color" content="#e8a54b" />
+    <title>🦮 골든 리트리버 통역기</title>
+    <meta name="description" content="듬직한 골든 리트리버가 당신의 말을 통역합니다 — 사람말 개소리 변환기" />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div class="app">
+      <header class="header">
+        <button
+          type="button"
+          id="muteBtn"
+          class="mute-btn"
+          aria-label="소리 끄기"
+          title="소리 끄기"
+        >
+          🔊
+        </button>
+        <div class="header-emoji">🦮</div>
+        <h1>골든 리트리버 통역기</h1>
+        <p class="subtitle">듬직한 골든 리트리버가 당신의 말을 통역합니다</p>
+        <p class="tagline">무슨 말이든 다정하고 묵직하게 짖어드려요 🐾</p>
+      </header>
+
+      <main class="panel">
+        <label class="field-label" for="msg">하고 싶은 말</label>
+        <textarea
+          id="msg"
+          class="input"
+          placeholder="예) 오늘 야근해야 해."
+          maxlength="200"
+          rows="3"
+        ></textarea>
+
+        <button type="button" id="translateBtn" class="translate-btn">
+          번역하기 🐾
+        </button>
+      </main>
+
+      <section id="resultSection" class="result-section" hidden>
+        <div class="result-card">
+          <div id="resultQuote" class="result-quote"></div>
+          <div class="result-arrow">↓</div>
+          <div class="result-char">
+            <span class="result-char-emoji">🦮</span>골든 리트리버
+          </div>
+          <p id="resultDogspeak" class="result-dogspeak"></p>
+          <p id="resultMeaning" class="result-meaning"></p>
+          <div class="result-watermark">🦮 골든 리트리버 통역기</div>
+        </div>
+
+        <div class="result-actions">
+          <button type="button" id="replayBtn" class="action-btn">다시 듣기 🔊</button>
+          <button type="button" id="copyBtn" class="action-btn">복사 📋</button>
+        </div>
+      </section>
+
+      <footer class="footer">회원가입 없음 · 저장 없음 · 브라우저에서 바로</footer>
+    </div>
+
+    <script src="script.js"></script>
   </body>
 </html>
